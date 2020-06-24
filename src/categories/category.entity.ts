@@ -22,4 +22,7 @@ export class Category {
     @Column({type: 'jsonb', nullable: true})
     data: CategoryData;
 
+    get rooms(): string[] {
+        return this.data?.rooms || [];
+    }
 }

@@ -4,7 +4,7 @@ import { CategoriesService } from './categories.service';
 import { CategoryDto } from './category.dto';
 
 @Controller('admin/categories')
-@UsePipes(new ValidationPipe({whitelist: true, forbidNonWhitelisted: true}))
+@UsePipes(new ValidationPipe({whitelist: true, forbidNonWhitelisted: true, transform: true}))
 export class CategoriesController {
 
     constructor(private categoriesSrv: CategoriesService) {
@@ -22,7 +22,6 @@ export class CategoriesController {
 
     @Post()
     create(@Body() categoryDto: CategoryDto): Promise<Category> {
-        console.log(categoryDto);
         return this.categoriesSrv.create(categoryDto);
     }
 
