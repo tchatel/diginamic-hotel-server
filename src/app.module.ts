@@ -5,6 +5,7 @@ import { Period } from './shared/periods/period.entity';
 import { AdminModule } from './admin/admin.module';
 import { Reservation } from './shared/reservations/reservation.entity';
 import { BookingModule } from './booking/booking.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { BookingModule } from './booking/booking.module';
     }),
     AdminModule,
     BookingModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

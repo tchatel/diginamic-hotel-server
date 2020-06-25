@@ -1,9 +1,13 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiQuery } from '@nestjs/swagger';
 import { Reservation } from 'src/shared/reservations/reservation.entity';
 import { ReservationsService } from 'src/shared/reservations/reservations.service';
+import { PassportBasicGuard } from 'src/auth/passport-basic.guard';
+import { ApiSecurity } from '@nestjs/swagger';
 
 @Controller('admin/reservations')
+@UseGuards(PassportBasicGuard)
+@ApiSecurity('basic')
 export class ReservationsController {
 
     constructor(private reservationsSrv: ReservationsService) {}

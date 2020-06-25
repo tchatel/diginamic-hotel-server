@@ -1,11 +1,15 @@
-import { Controller, Get, Param, ParseIntPipe, Put, HttpCode, HttpStatus, Body, Post, Delete, Query, UsePipes, ValidationPipe, HttpException } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Put, HttpCode, HttpStatus, Body, Post, Delete, Query, UsePipes, ValidationPipe, HttpException, UseGuards } from '@nestjs/common';
 import { Period } from '../shared/periods/period.entity';
 import { PeriodsService } from '../shared/periods/periods.service';
 import { PeriodDto } from '../shared/periods/period.dto';
 import { ApiQuery } from '@nestjs/swagger';
+import { PassportBasicGuard } from 'src/auth/passport-basic.guard';
+import { ApiSecurity } from '@nestjs/swagger';
 
 @Controller('admin/periods')
 @UsePipes(new ValidationPipe({whitelist: true, forbidNonWhitelisted: true, transform: true}))
+@UseGuards(PassportBasicGuard)
+@ApiSecurity('basic')
 export class PeriodsController {
 
     constructor(private periodsSrv: PeriodsService) {

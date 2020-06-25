@@ -7,6 +7,10 @@ async function bootstrap() {
   app.enableCors();
 
   const options = new DocumentBuilder()
+    .addSecurity('basic', {
+      type: 'http',
+      scheme: 'basic',
+    })
     .setTitle('Hotel')
     .setDescription('Hotel API description')
     .setVersion('1.0')
