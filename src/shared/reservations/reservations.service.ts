@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Reservation } from './reservation.entity';
 import { Repository } from 'typeorm';
@@ -8,6 +8,7 @@ import { Category } from '../categories/category.entity';
 import { Period } from '../periods/period.entity';
 import { DateUtil } from 'src/util/date.util';
 import { AvailabilityResultDto } from './availability-result.dto';
+import { ReservationDto } from './reservation.dto';
 
 @Injectable()
 export class ReservationsService {
@@ -51,6 +52,37 @@ export class ReservationsService {
             return {category, available, price};
         });
         return {nights: DateUtil.computeNights(stay), list};
+    }
+
+    async tryBooking(stay: Stay, persons: number, 
+                     categoryId: number, reservationDto: ReservationDto): Promise<Reservation> {
+        // Catégorie demandée
+        const category: Category = await this.categoriesSrv.readOne(categoryId);
+        if (category.data.rooms.length < persons) {
+            throw new HttpException('Room too small.', 
+                                    HttpStatus.PRECONDITION_FAILED);
+        }
+        // Périodes de prix (de la catégorie demandée) qui chevauchent les dates du séjour
+        const categoryPeriods: Period[] = await this.periodsSrv.searchAll({...stay, categoryId});
+        // Réservations (de la catégorie demandée) qui chevauchent les dates du séjour
+        const categoryReservations: Reservation[] = await this.searchAll({...stay, categoryId});
+
+        const max = (category.data?.rooms || []).length;
+        const available = this.checkAvailabilityEachDay(stay, categoryReservations, max);
+        const price = this.computePrice(stay, categoryPeriods);
+        
+        if (available) {
+            const reservationData = {
+                nights: DateUtil.computeNights(stay),
+                price,
+                persons,
+                customer: reservationDto.customer 
+            };
+            return await this.reservationRepository.save({categoryId, ...stay, data: reservationData});
+        } else {
+            throw new HttpException('No room left in this category.', 
+                                    HttpStatus.PRECONDITION_FAILED);
+        }
     }
 
     private computePrice(stay: Stay, periods: Period[]) {
