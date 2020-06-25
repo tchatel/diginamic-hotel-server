@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
-import { Category } from "src/categories/category.entity";
+import { Category } from "src/shared/categories/category.entity";
 
 export class PeriodData {
     prices: number[]; // du dimanche au samedi

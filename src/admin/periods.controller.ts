@@ -1,7 +1,7 @@
 import { Controller, Get, Param, ParseIntPipe, Put, HttpCode, HttpStatus, Body, Post, Delete, Query, UsePipes, ValidationPipe, HttpException } from '@nestjs/common';
-import { Period } from './period.entity';
-import { PeriodsService } from './periods.service';
-import { PeriodDto } from './period.dto';
+import { Period } from '../shared/periods/period.entity';
+import { PeriodsService } from '../shared/periods/periods.service';
+import { PeriodDto } from '../shared/periods/period.dto';
 import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('admin/periods')

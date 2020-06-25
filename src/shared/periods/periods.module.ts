@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { PeriodsController } from './periods.controller';
 import { PeriodsService } from './periods.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Period } from './period.entity';
@@ -8,7 +7,7 @@ import { Period } from './period.entity';
   imports: [
     TypeOrmModule.forFeature([Period])
   ],
-  controllers: [PeriodsController],
-  providers: [PeriodsService]
+  providers: [PeriodsService],
+  exports: [PeriodsService],
 })
 export class PeriodsModule {}
