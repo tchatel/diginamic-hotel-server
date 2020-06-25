@@ -33,7 +33,8 @@ export class ReservationsService {
 
     async searchAvailable(stay: Stay, persons: number): Promise<AvailabilityResultDto> {
         // Catégories de chambres
-        const categories: Category[] = await this.categoriesSrv.readAll();
+        const categories: Category[] = (await this.categoriesSrv.readAll())
+            .filter(category => category.persons >= persons);
         // Périodes de prix qui chevauchent les dates du séjour
         const periods: Period[] = await this.periodsSrv.searchAll(stay);
         // Réservations qui chevauchent les dates du séjour
@@ -43,7 +44,7 @@ export class ReservationsService {
             const max = (category.data?.rooms || []).length;
             const categoryReservations: Reservation[] = 
                 reservations.filter(resa => resa.categoryId === category.id);
-            const available = this.checkAvailabilityEachDay(stay, reservations, max);
+            const available = this.checkAvailabilityEachDay(stay, categoryReservations, max);
             const price = this.computePrice(stay, periods);
             return {category, available, price};
         });
