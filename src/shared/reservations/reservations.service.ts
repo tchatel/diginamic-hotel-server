@@ -44,8 +44,10 @@ export class ReservationsService {
             const max = (category.data?.rooms || []).length;
             const categoryReservations: Reservation[] = 
                 reservations.filter(resa => resa.categoryId === category.id);
+            const categoryPeriods: Period[] = 
+                periods.filter(period => period.categoryId === category.id);
             const available = this.checkAvailabilityEachDay(stay, categoryReservations, max);
-            const price = this.computePrice(stay, periods);
+            const price = this.computePrice(stay, categoryPeriods);
             return {category, available, price};
         });
         return {nights: DateUtil.computeNights(stay), list};
