@@ -9,6 +9,7 @@ import { Period } from '../periods/period.entity';
 import { DateUtil } from 'src/util/date.util';
 import { AvailabilityResultDto } from './availability-result.dto';
 import { ReservationDto } from './reservation.dto';
+import { v1 as uuidv1 } from 'uuid';
 
 @Injectable()
 export class ReservationsService {
@@ -58,7 +59,7 @@ export class ReservationsService {
                      categoryId: number, reservationDto: ReservationDto): Promise<Reservation> {
         // Catégorie demandée
         const category: Category = await this.categoriesSrv.readOne(categoryId);
-        if (category.data.rooms.length < persons) {
+        if (category.persons < persons) {
             throw new HttpException('Room too small.', 
                                     HttpStatus.PRECONDITION_FAILED);
         }
@@ -72,18 +73,36 @@ export class ReservationsService {
         const price = this.computePrice(stay, categoryPeriods);
         
         if (available) {
+            const uuid = uuidv1();
             const reservationData = {
                 nights: DateUtil.computeNights(stay),
                 price,
                 persons,
                 customer: reservationDto.customer 
             };
-            return await this.reservationRepository.save({categoryId, ...stay, data: reservationData});
+            return await this.reservationRepository.save({
+                categoryId, 
+                ...stay, 
+                code: uuid,
+                data: reservationData
+            });
         } else {
             throw new HttpException('No room left in this category.', 
                                     HttpStatus.PRECONDITION_FAILED);
         }
     }
+
+    async delete(code: string): Promise<Reservation> {
+        const resa = await this.reservationRepository
+          .createQueryBuilder('reservation')
+          .where('reservation.code = :code', {code})
+          .getOne();
+        if (resa) {
+          return this.reservationRepository.remove(resa);
+        } else {
+          throw new HttpException('Reservation not found, code may be wrong.', HttpStatus.NOT_FOUND)
+        }
+      }
 
     private computePrice(stay: Stay, periods: Period[]) {
         let price = 0;

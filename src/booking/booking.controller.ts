@@ -1,4 +1,4 @@
-import { Controller, Get, Query, ParseIntPipe, Body, Post } from '@nestjs/common';
+import { Controller, Get, Query, ParseIntPipe, Body, Post, Delete, Param } from '@nestjs/common';
 import { ReservationsService, Stay } from 'src/shared/reservations/reservations.service';
 import { AvailabilityResultDto } from 'src/shared/reservations/availability-result.dto';
 import { ReservationDto } from 'src/shared/reservations/reservation.dto';
@@ -25,6 +25,11 @@ export class BookingController {
                @Body() reservationDto: ReservationDto): Promise<Reservation> {
         const stay: Stay = {startDate, endDate};
         return this.reservationsSrv.tryBooking(stay, persons, categoryId, reservationDto);        
+    }
+
+    @Delete(':code')
+    delete(@Param('code') code: string): Promise<Reservation> {
+      return this.reservationsSrv.delete(code);
     }
 
 }
