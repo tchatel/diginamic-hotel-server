@@ -23,7 +23,6 @@ export class PeriodsService {
             query = query.andWhere('period.categoryId = :catId', {catId: options.categoryId});
         }
         const allPeriods: Period[] = await query.getMany();
-        console.log(query.getSql(), allPeriods);
         // return allPeriods.filter(period => !options?.ignorePeriodId || period.id !== options.ignorePeriodId);
         const mustIgnoreId = options?.ignorePeriodId;
         return mustIgnoreId 
